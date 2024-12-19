@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+main {
+  display: flex;
+  height: 100%;
+}
+
+.bg-gray-300 {
+  background-color: #e2e8f0;
+  cursor: col-resize; 
+}
+
+.bg-gray-300:hover {
+  background-color: #cbd5e1;
+}
+
+@media (max-width: 768px) {
+  main {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .bg-gray-300 {
+    display: none;
+  }
+
+  .bg-gray-100,
+  .prose {
+    flex-grow: 1;
+    min-height: 50vh; 
+  }
+}
