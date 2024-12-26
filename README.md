@@ -20,8 +20,8 @@ Ensure you have the following installed:
 
 Clone the repository and navigate to the project directory:
 ```bash
-git clone https://github.com/unboundedmarket/ai-explainer-interface.git
-cd ai-explainer-interface
+git clone https://github.com/unboundedmarket/ai-sc-explainer-interface.git
+cd ai-sc-explainer-interface
 ```
 
 Install the required dependencies:
