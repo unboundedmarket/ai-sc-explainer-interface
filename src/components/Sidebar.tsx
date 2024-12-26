@@ -30,22 +30,59 @@ const Sidebar: React.FC<SidebarProps> = ({
   setIsCollapsed,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadStatus, setUploadStatus] = useState("");
 
   const filteredContracts = contracts.filter((contract) =>
     contract.source.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      setSelectedFile(event.target.files[0]);
+    }
+  };
+
+  const handleFileUpload = async () => {
+    try {
+      if (!selectedFile) {
+        setUploadStatus("No file selected.");
+        return;
+      }
+      const fileContent = await selectedFile.text();
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileName: selectedFile.name,
+          fileContent: fileContent,
+        }),
+      });
+
+      if (response.ok) {
+        setUploadStatus("File uploaded successfully!");
+      } else {
+        setUploadStatus("Error uploading file.");
+      }
+    } catch (error) {
+      console.error(error);
+      setUploadStatus("Error uploading file.");
+    }
+  };
 
   return (
     <aside
       className={`${
         isCollapsed ? "w-16" : "w-64"
       } h-[calc(100%-2rem)] mt-4 mb-4 transition-all duration-300 flex flex-col
-    backdrop-blur-lg rounded-lg shadow-lg ${
-      isDarkMode
-        ? "bg-[#141414]/70 text-white"
-        : "bg-[#ffffff]/70 text-gray-900"
-    }`}
+      backdrop-blur-lg rounded-lg shadow-lg ${
+        isDarkMode
+          ? "bg-[#141414]/70 text-white"
+          : "bg-[#ffffff]/70 text-gray-900"
+      }`}
     >
+      {/* Collapsible Button */}
       <button
         className={`p-4 fixed top-3 ${isCollapsed ? "left-2" : "left-4"} z-50 ${
           isDarkMode
@@ -54,9 +91,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         } flex items-center justify-center rounded-full shadow-md border ${
           isDarkMode ? "border-[#475569]" : "border-gray-400"
         }`}
-        style={{
-          borderWidth: "1px",
-        }}
+        style={{ borderWidth: "1px" }}
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
         {isCollapsed ? (
@@ -65,6 +100,8 @@ const Sidebar: React.FC<SidebarProps> = ({
           <FiChevronLeft size={20} />
         )}
       </button>
+
+      {/* Dark Mode Toggle */}
       <div className="p-4 flex items-center justify-center mt-16">
         {isCollapsed ? (
           <button
@@ -103,6 +140,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
       </div>
 
+      {/* Only show the search and contracts if expanded */}
       {!isCollapsed && (
         <>
           <h2 className="text-lg font-bold mb-2 px-4">Smart Contracts</h2>
@@ -119,6 +157,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </>
       )}
+
       <ul className="flex-1 overflow-auto">
         {filteredContracts.map((contract) => (
           <li
@@ -146,7 +185,37 @@ const Sidebar: React.FC<SidebarProps> = ({
           <p className="text-gray-400 px-4">No contracts found</p>
         )}
       </ul>
-      <footer className="p-4 flex justify-center items-center">
+
+      {/* Footer */}
+      <footer className="mt-auto p-4 flex flex-col items-center">
+        {!isCollapsed && (
+          <div className="w-full mb-4 flex flex-col items-center space-y-2 px-2">
+            <input
+              type="file"
+              accept=".sol,.py,.hs,.ak,.js,.ts,.tsx"
+              onChange={handleFileChange}
+              className={`
+                text-sm cursor-pointer w-full
+                ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black"}
+                rounded p-1
+              `}
+            />
+            <button
+              onClick={handleFileUpload}
+              className={`w-full px-3 py-2 text-sm rounded shadow-md transition-colors duration-200 ${
+                isDarkMode
+                  ? "bg-[#334155] hover:bg-[#475569] text-white"
+                  : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+              }`}
+            >
+              Upload
+            </button>
+            {uploadStatus && (
+              <span className="text-sm text-center">{uploadStatus}</span>
+            )}
+          </div>
+        )}
+
         <a
           href="https://twitter.com/unboundedmarket"
           target="_blank"
