@@ -16,6 +16,15 @@ main {
   background-color: #cbd5e1;
 }
 
+.custom-link-dark {
+  stroke: #ffffff !important;
+  stroke-width: 2px;
+}
+.custom-link-light {
+  stroke: #000000 !important;
+  stroke-width: 2px;
+}
+
 @media (max-width: 768px) {
   main {
     flex-direction: column;
