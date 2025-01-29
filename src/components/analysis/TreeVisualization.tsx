@@ -79,8 +79,6 @@ const TreeVisualization: React.FC<TreeVisualizationProps> = ({
       }
     }
   }, [isDarkMode]);
-  console.log("TreeVisualization.tsx");
-  console.log(data.children);
   const renderCustomNode = ({ nodeDatum }: { nodeDatum: TreeNodeDatum }) => {
     return (
       <g>

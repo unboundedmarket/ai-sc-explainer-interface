@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+
 import AnalysisResults from "../analysis/AnalysisResults";
 import { AnalysisView } from "../analysis/analysisTypes";
+import ExecutionFlow from "../analysis/ExecutionFlow";
 
 interface ExplanationSectionProps {
   isDarkMode: boolean;
@@ -18,6 +20,7 @@ interface ExplanationSectionProps {
   analysisView: AnalysisView;
   setAnalysisView: React.Dispatch<React.SetStateAction<AnalysisView>>;
   AnalysisView: { [key: string]: string };
+  code: string;
 }
 
 const ExplanationSection: React.FC<ExplanationSectionProps> = ({
@@ -30,7 +33,18 @@ const ExplanationSection: React.FC<ExplanationSectionProps> = ({
   analysisView,
   setAnalysisView,
   AnalysisView,
+  code,
 }) => {
+  const [analysisOpen, setAnalysisOpen] = useState(false);
+  const [flowOpen, setFlowOpen] = useState(false);
+  const onAnalyzeClicked = () => {
+    setAnalysisOpen(true);
+    handleAnalyze();
+  };
+  const onFlowClicked = () => {
+    setFlowOpen(true);
+  };
+
   return (
     <div
       className={`p-4 overflow-auto backdrop-blur-lg mb-4 rounded-lg shadow-lg transition-colors duration-300 ${
@@ -42,6 +56,7 @@ const ExplanationSection: React.FC<ExplanationSectionProps> = ({
         width: isMobile ? "100%" : `${100 - leftWidth}%`,
       }}
     >
+      {/* Title / Model Link */}
       {isMobile ? (
         <>
           <h2 className="text-xl font-bold mb-1 break-all">
@@ -79,16 +94,16 @@ const ExplanationSection: React.FC<ExplanationSectionProps> = ({
         </h2>
       )}
 
-      {/* Explanation Markdown */}
+      {/* Main Explanation */}
       <ReactMarkdown remarkPlugins={[remarkGfm]}>
         {contract.explanation}
       </ReactMarkdown>
 
-      {/* Analysis Section */}
-      <div className="mt-4">
+      {/* Buttons for Analysis + Flow */}
+      <div className="mt-4 space-x-2">
         <button
-          onClick={handleAnalyze}
-          className={`px-3 py-2 mr-2 rounded ${
+          onClick={onAnalyzeClicked}
+          className={`px-3 py-2 rounded ${
             isDarkMode
               ? "bg-[#334155] hover:bg-[#475569] text-white"
               : "bg-gray-200 hover:bg-gray-300 text-gray-800"
@@ -97,36 +112,56 @@ const ExplanationSection: React.FC<ExplanationSectionProps> = ({
           Analyze Code with Tree-Sitter
         </button>
 
-        {analysis && (
-          <>
-            <span className="text-sm ml-2 mr-2">View: </span>
-            <select
-              value={analysisView}
-              onChange={(e) => setAnalysisView(e.target.value as AnalysisView)}
-              className={`p-1 rounded ${
-                isDarkMode
-                  ? "bg-[#334155] hover:bg-[#475569] text-white"
-                  : "bg-gray-200 hover:bg-gray-300 text-gray-800"
-              }`}
-            >
-              {Object.values(AnalysisView).map((view) => (
-                <option key={view} value={view}>
-                  {view}
-                </option>
-              ))}
-            </select>
-          </>
-        )}
+        <button
+          onClick={onFlowClicked}
+          className={`px-3 py-2 rounded ${
+            isDarkMode
+              ? "bg-[#334155] hover:bg-[#475569] text-white"
+              : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+          }`}
+        >
+          Generate Execution Flow
+        </button>
       </div>
 
+      {/* Analysis View Selector (only show if we have analysis) */}
+      {analysis && analysisOpen && (
+        <div className="mt-4">
+          <span className="text-sm ml-2 mr-2">View: </span>
+          <select
+            value={analysisView}
+            onChange={(e) => setAnalysisView(e.target.value as AnalysisView)}
+            className={`p-1 rounded ${
+              isDarkMode
+                ? "bg-[#334155] hover:bg-[#475569] text-white"
+                : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+            }`}
+          >
+            {Object.values(AnalysisView).map((view) => (
+              <option key={view} value={view}>
+                {view}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       {/* Analysis Results */}
-      {analysis && (
+      {analysis && analysisOpen && (
         <div className="mt-4 space-y-4">
           <AnalysisResults
             analysis={analysis}
             analysisView={analysisView}
             isDarkMode={isDarkMode}
           />
+        </div>
+      )}
+
+      {/* Execution Flow */}
+      {flowOpen && (
+        <div className="mt-8">
+          <h3 className="text-lg font-semibold mb-2">Execution Flow</h3>
+          <ExecutionFlow code={code} isDarkMode={isDarkMode} />
         </div>
       )}
     </div>

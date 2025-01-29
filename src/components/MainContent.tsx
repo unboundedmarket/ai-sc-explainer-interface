@@ -236,6 +236,7 @@ const MainContent: React.FC<MainContentProps> = ({
 
         {/* right panel: Explanation + Analysis UI */}
         <ExplanationSection
+          code={contract.code}
           isDarkMode={isDarkMode}
           isMobile={isMobile}
           leftWidth={leftWidth}
