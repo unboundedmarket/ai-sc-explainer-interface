@@ -76,6 +76,8 @@ It includes two main themes: **Light Mode** and **Dark Mode**, which can be togg
 2. **AI Explanations Panel**: A display of the LLM-generated explanation.
 3. **Theme Toggle**: Switch between Light and Dark modes.
 4. **Search Bar**: Search for specific contracts or contract creators.
+5. **Execution Flow**: User can generate an interactive execution flow diagram of the code. 
+6.  **Further analysis**: User can use tree-sitter grammars to parse the code and view its syntax tree.
 
 ### Light Mode
 ![Light Mode Screenshot](ExplainerLightmode.png)  
